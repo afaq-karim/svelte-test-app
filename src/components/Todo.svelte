@@ -1,3 +1,14 @@
+<script lang="ts">
+	import type { ITodo } from '$root/types/todo';
+
+	let todos: ITodo[] = [
+		{ id: '1e4a59703af84', text: 'Todo 1', completed: true },
+		{ id: '9e09bcd7b9349', text: 'Todo 2', completed: false },
+		{ id: '9e4273a51a37c', text: 'Todo 3', completed: false },
+		{ id: '53ae48bf605cc', text: 'Todo 4', completed: false }
+	];
+</script>
+
 <main>
 	<h1 class="title">Todos</h1>
 
@@ -16,29 +27,32 @@
 		</form>
 
 		<ul class="todo-list">
-			<li class="todo">
-				<div class="todo-item">
-					<div>
-						<input type="checkbox" id="todo" class="toggle" />
-						<label aria-label="Check todo" class="todo-check" for="todo" />
-						<span class="todo-text">Todo 1</span>
-						<button aria-label="Remove todo" class="remove" />
+			{#each todos as todo (todo.id)}
+				<li class="todo">
+					<div class="todo-item">
+						<div class="flex-item">
+							<input checked={todo.completed} type="checkbox" id="todo" class="toggle" />
+							<label aria-label="Check todo" class="todo-check" for="todo" />
+							<span class="todo-text">
+								{todo.text}
+							</span>
+							<button aria-label="Remove todo" class="remove" />
+						</div>
+						<!-- <input class="edit" type="text" autofocus /> -->
 					</div>
-
-					<!-- <input class="edit" type="text" autofocus /> -->
-				</div>
-			</li>
+				</li>
+			{/each}
 		</ul>
 
 		<div class="actions">
 			<span class="todo-count"> 0 left </span>
-			<div class="filters" />
-			<button class="filter">All</button>
-			<button class="filter">Active</button>
-			<button class="filter">Completed</button>
+			<div class="filters">
+				<button class="filter">All</button>
+				<button class="filter">Active</button>
+				<button class="filter">Completed</button>
+			</div>
+			<button class="clear-completed">Clear Completed</button>
 		</div>
-
-		<button class="clear-completed">Clear Completed</button>
 	</section>
 </main>
 
@@ -159,7 +173,7 @@
 
 	.todo-item {
 		position: relative;
-		display: flex;
+		/* display: flex; */
 		align-items: center;
 		padding: 0 var(--spacing-8);
 	}
@@ -180,7 +194,7 @@
 	.toggle {
 		position: absolute;
 		top: 26px;
-		left: 13px;
+		left: 19px;
 		transform: scale(2);
 		opacity: 0;
 	}
@@ -235,5 +249,8 @@
 
 	.selected {
 		border-color: var(--color-highlight);
+	}
+	.flex-item {
+		display: flex;
 	}
 </style>
