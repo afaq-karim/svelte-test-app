@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { ITodo } from '$root/types/todo';
+	import AddTodo from './AddTodo.svelte';
+	import Todo from './Todo1.svelte';
 
 	let todos: ITodo[] = [
 		{ id: '1e4a59703af84', text: 'Todo 1', completed: true },
@@ -7,52 +9,65 @@
 		{ id: '9e4273a51a37c', text: 'Todo 3', completed: false },
 		{ id: '53ae48bf605cc', text: 'Todo 4', completed: false }
 	];
+
+	// debug
+	$: console.log(todos);
+
+	// computed
+	$: todosAmount = todos.length;
+
+	// methods
+	function generateRandomId(): string {
+		return Math.random().toString(16).slice(2);
+	}
+	function addTodo(todo: string): void {
+		let newTodo: ITodo = {
+			id: generateRandomId(),
+			text: todo,
+			completed: false
+		};
+		todos = [...todos, newTodo];
+	}
+	function toggleCompleted(event: MouseEvent): void {
+		let { checked } = event.target as HTMLInputElement;
+		todos = todos.map((todo) => ({
+			...todo,
+			completed: checked
+		}));
+	}
+
+	function completeTodo(id: string): void {
+		todos = todos.map((todo) => {
+			if (todo.id === id) {
+				todo.completed = !todo.completed;
+			}
+			return todo;
+		});
+	}
 </script>
 
 <main>
 	<h1 class="title">Todos</h1>
 
 	<section class="todos">
-		<form>
-			<input type="checkbox" id="toggle-all" class="toggle-all" />
-			<label aria-label="Mark all as complete" for="toggle-all">Mark all as complete</label>
+		<AddTodo {addTodo} {toggleCompleted} {todosAmount} />
+		{#if todosAmount}
+			<ul class="todo-list">
+				{#each todos as todo (todo.id)}
+					<Todo {todo} {completeTodo} />
+				{/each}
+			</ul>
 
-			<input
-				id="new-todo"
-				class="new-todo"
-				placeholder="Whats need to be done.?"
-				type="text"
-				autofocus
-			/>
-		</form>
-
-		<ul class="todo-list">
-			{#each todos as todo (todo.id)}
-				<li class="todo">
-					<div class="todo-item">
-						<div class="flex-item">
-							<input checked={todo.completed} type="checkbox" id="todo" class="toggle" />
-							<label aria-label="Check todo" class="todo-check" for="todo" />
-							<span class="todo-text">
-								{todo.text}
-							</span>
-							<button aria-label="Remove todo" class="remove" />
-						</div>
-						<!-- <input class="edit" type="text" autofocus /> -->
-					</div>
-				</li>
-			{/each}
-		</ul>
-
-		<div class="actions">
-			<span class="todo-count"> 0 left </span>
-			<div class="filters">
-				<button class="filter">All</button>
-				<button class="filter">Active</button>
-				<button class="filter">Completed</button>
+			<div class="actions">
+				<span class="todo-count"> 0 left </span>
+				<div class="filters">
+					<button class="filter">All</button>
+					<button class="filter">Active</button>
+					<button class="filter">Completed</button>
+				</div>
+				<button class="clear-completed">Clear Completed</button>
 			</div>
-			<button class="clear-completed">Clear Completed</button>
-		</div>
+		{/if}
 	</section>
 </main>
 
@@ -104,129 +119,6 @@
 			0 9px 1px -3px hsla(0, 0%, 0%, 0.2), 0 16px 0 -6px hsl(0, 0%, 96%),
 			0 17px 2px -6px hsla(0, 0%, 0%, 0.2);
 		z-index: -1;
-	}
-
-	/* Add todo */
-
-	.toggle-all {
-		width: 1px;
-		height: 1px;
-		position: absolute;
-		opacity: 0;
-	}
-
-	.toggle-all + label {
-		position: absolute;
-		font-size: 0;
-	}
-
-	.toggle-all + label:before {
-		content: '❯';
-		display: block;
-		padding: var(--spacing-16);
-		font-size: var(--font-24);
-		color: var(--color-gray-58);
-		transform: rotate(90deg);
-	}
-
-	.toggle-all:checked + label:before {
-		color: var(--color-gray-28);
-	}
-
-	.new-todo {
-		width: 100%;
-		padding: var(--spacing-16);
-		padding-left: 60px;
-		font-size: var(--font-24);
-		border: none;
-		border-bottom: 1px solid var(--shadow-1);
-	}
-
-	/* Todo */
-
-	.todo {
-		font-size: var(--font-24);
-		font-weight: 400;
-		border-bottom: 1px solid #ededed;
-	}
-
-	.todo:last-child {
-		border-bottom: none;
-	}
-
-	.todo-check,
-	.todo-text {
-		display: block;
-		padding: var(--spacing-16);
-		color: var(--color-gray-28);
-		transition: color 0.4s;
-	}
-
-	.todo-check {
-		border-radius: 100%;
-	}
-
-	.completed {
-		color: var(--color-gray-58);
-		text-decoration: line-through;
-	}
-
-	.todo-item {
-		position: relative;
-		/* display: flex; */
-		align-items: center;
-		padding: 0 var(--spacing-8);
-	}
-
-	.editing .todo-item {
-		display: none;
-	}
-
-	.edit {
-		width: 100%;
-		padding: var(--spacing-8);
-		font-size: var(--font-24);
-		border: 1px solid #999;
-		border-radius: var(--radius-base);
-		box-shadow: inset 0 -1px 5px 0 var(--shadow-1);
-	}
-
-	.toggle {
-		position: absolute;
-		top: 26px;
-		left: 19px;
-		transform: scale(2);
-		opacity: 0;
-	}
-
-	.toggle + label {
-		background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%23949494%22%20stroke-width%3D%223%22/%3E%3C/svg%3E');
-		background-repeat: no-repeat;
-		background-position: 84% 50%;
-	}
-
-	.toggle:checked + label {
-		background-image: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%22-10%20-18%20100%20135%22%3E%3Ccircle%20cx%3D%2250%22%20cy%3D%2250%22%20r%3D%2250%22%20fill%3D%22none%22%20stroke%3D%22%2359A193%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20fill%3D%22%233EA390%22%20d%3D%22M72%2025L42%2071%2027%2056l-4%204%2020%2020%2034-52z%22%2F%3E%3C%2Fsvg%3E');
-	}
-
-	.remove {
-		display: none;
-		margin-left: auto;
-		font-size: var(--font-32);
-		color: var(--color-gray-58);
-		transition: color 0.2s ease-out;
-	}
-
-	.remove:hover {
-		color: var(--color-highlight);
-	}
-
-	.remove:after {
-		content: '×';
-	}
-
-	.todo:hover .remove {
-		display: block;
 	}
 
 	/* Filters */
