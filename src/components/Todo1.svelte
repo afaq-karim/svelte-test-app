@@ -1,15 +1,49 @@
 <script lang="ts">
 	import type { ITodo } from '$root/types/todo';
+	import { escape_object } from 'svelte/internal';
+	import type { StartStopNotifier } from 'svelte/store';
 
 	type completeTodoType = (id: string) => void;
 	type removeTodoType = (id: string) => void;
+	type EditTodoType = (id: string, newTodo: string) => void;
 
 	export let todo: ITodo;
 	export let completeTodo: completeTodoType;
 	export let removeTodo: removeTodoType;
+	export let editTodo: EditTodoType;
+
+	let edit = false;
+
+	function toggleEditing() {
+		editing = true;
+	}
+	function handleEdit(event: KeyboardEvent, id: string) {
+		let pressedKey = event.key;
+		let targetElement = event.target as HTMLInputElement;
+		let newTodo = targetElement.value;
+
+		switch (pressedKey) {
+			case 'Escape':
+				targetElement.blur();
+				break;
+			case 'Enter':
+				editTodo(id, newTodo);
+				targetElement.blur();
+				break;
+		}
+	}
+
+	function handleBlur(event: FocusEvent, id: string) {
+		let targetElement = event.target as HTMLInputElement;
+		let newTodo = targetElement.value;
+
+		editTodo(id, newTodo);
+		targetElement.blur();
+		editing = false;
+	}
 </script>
 
-<li class="todo">
+<li class:editing class="todo">
 	<div class="todo-item">
 		<div class="flex-item">
 			<input
@@ -20,12 +54,21 @@
 				class="toggle"
 			/>
 			<label aria-label="Check todo" class="todo-check" for="todo" />
-			<span class:completed={todo.completed} class="todo-text">
+			<span on:dblclick={toggleEditing} class:completed={todo.completed} class="todo-text">
 				{todo.text}
 			</span>
 			<button on:click={() => removeTodo(todo.id)} aria-label="Remove todo" class="remove" />
 		</div>
-		<!-- <input class="edit" type="text" autofocus /> -->
+		{#if editing}
+			<input
+				on:keydown={(event) => handleEdit(event, todo.id)}
+				on:blur={(event) => handleBlur(event, todo.id)}
+				class="edit"
+				type="text"
+				value={todo.text}
+				autofocus
+			/>
+		{/if}
 	</div>
 </li>
 
