@@ -44,6 +44,9 @@
 			return todo;
 		});
 	}
+	function removeTodo(id: string): void {
+		todos = todos.filter((todo) => todo.id === id);
+	}
 </script>
 
 <main>
@@ -54,7 +57,7 @@
 		{#if todosAmount}
 			<ul class="todo-list">
 				{#each todos as todo (todo.id)}
-					<Todo {todo} {completeTodo} />
+					<Todo {todo} {completeTodo} {removeTodo} />
 				{/each}
 			</ul>
 
