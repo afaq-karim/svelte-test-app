@@ -12,7 +12,7 @@
 	export let removeTodo: removeTodoType;
 	export let editTodo: EditTodoType;
 
-	let edit = false;
+	let editing = false;
 
 	function toggleEditing() {
 		editing = true;
