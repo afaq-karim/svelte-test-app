@@ -20,6 +20,7 @@
 	function generateRandomId(): string {
 		return Math.random().toString(16).slice(2);
 	}
+
 	function addTodo(todo: string): void {
 		let newTodo: ITodo = {
 			id: generateRandomId(),
@@ -28,6 +29,7 @@
 		};
 		todos = [...todos, newTodo];
 	}
+
 	function toggleCompleted(event: MouseEvent): void {
 		let { checked } = event.target as HTMLInputElement;
 		todos = todos.map((todo) => ({
@@ -44,6 +46,7 @@
 			return todo;
 		});
 	}
+
 	function removeTodo(id: string): void {
 		todos = todos.filter((todo) => todo.id === id);
 	}
@@ -80,15 +83,12 @@
 </main>
 
 <style>
-	/* Todos */
-
 	.title {
 		font-size: var(--font-80);
 		font-weight: inherit;
 		text-align: center;
 		color: var(--color-title);
 	}
-
 	.todos {
 		--width: 500px;
 		--todos-bg: hsl(0 0% 98%);
@@ -101,11 +101,9 @@
 		border: 1px solid var(--color-gray-90);
 		box-shadow: 0 0 4px var(--shadow-1);
 	}
-
 	.todo-list {
 		list-style: none;
 	}
-
 	.actions {
 		position: relative;
 		display: flex;
@@ -115,7 +113,6 @@
 		font-size: 0.9rem;
 		border-top: 1px solid var(--color-gray-90);
 	}
-
 	.actions:before {
 		content: '';
 		height: 40px;
@@ -128,29 +125,17 @@
 			0 17px 2px -6px hsla(0, 0%, 0%, 0.2);
 		z-index: -1;
 	}
-
-	/* Filters */
-
 	.filters {
 		display: flex;
 		gap: var(--spacing-4);
 	}
-
 	.filter {
 		text-transform: capitalize;
 		padding: var(--spacing-4) var(--spacing-8);
 		border: 1px solid transparent;
 		border-radius: var(--radius-base);
 	}
-
 	.filter:hover {
 		border: 1px solid var(--color-highlight);
-	}
-
-	.selected {
-		border-color: var(--color-highlight);
-	}
-	.flex-item {
-		display: flex;
 	}
 </style>

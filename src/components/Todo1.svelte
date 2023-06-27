@@ -157,4 +157,10 @@
 	.todo:hover .remove {
 		display: block;
 	}
+	.flex-item {
+		display: flex;
+	}
+	.selected {
+		border-color: var(--color-highlight);
+	}
 </style>
